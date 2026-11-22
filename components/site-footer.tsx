@@ -114,11 +114,11 @@ export function SiteFooter() {
         {/* payments */}
         <div className="flex flex-col gap-3">
           <p className="text-[length:calc(13px*var(--fs))] font-semibold tracking-[0.14em] text-[var(--brand)]">{t("วิธีชำระเงิน")}</p>
-          <ul className="flex flex-wrap gap-3">
+          <ul className="grid grid-cols-5 gap-2 sm:flex sm:flex-wrap sm:gap-3">
             {banks.map((b) => (
               <li key={b.code} title={b.name}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={b.image} alt={b.name} loading="lazy" className="size-12 rounded-full bg-white object-contain p-1" />
+                <img src={b.image} alt={b.name} loading="lazy" className="aspect-square w-full rounded-full bg-white object-contain p-1 sm:size-12" />
               </li>
             ))}
           </ul>
@@ -159,11 +159,11 @@ export function SiteFooter() {
               {channels.map((c) => (
                 <a key={c.id} href={c.link} target={/^https?:/i.test(c.link) ? "_blank" : undefined} rel="noopener noreferrer"
                   aria-label={t("ติดต่อทาง {v}", { v: CHANNEL_NAME[c.type] ?? c.type })}
-                  className="grid size-10 place-items-center rounded-full border border-white/15 bg-white/[0.04] text-white/80 transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:text-[var(--brand)]">
-                  <svg viewBox="0 0 24 24" className="size-5" fill="currentColor" aria-hidden>{ICON[c.type] ?? <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />}</svg>
+                  className="grid size-12 place-items-center rounded-full border border-[var(--brand)] bg-[var(--brand)]/15 text-[var(--brand)] shadow-[0_0_18px_color-mix(in_srgb,var(--brand)_35%,transparent)] transition hover:-translate-y-0.5 hover:bg-[var(--brand)] hover:text-[var(--brand-dark)]">
+                  <svg viewBox="0 0 24 24" className="size-6" fill="currentColor" aria-hidden>{ICON[c.type] ?? <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />}</svg>
                 </a>
               ))}
-              <Link href="/contact/" className="inline-flex h-10 items-center rounded-full border border-[var(--brand)]/60 px-4 text-[length:calc(13px*var(--fs))] font-medium text-[var(--brand)] transition hover:bg-[var(--brand)] hover:text-[var(--brand-dark)]">
+              <Link href="/contact/" className="inline-flex h-12 items-center rounded-full bg-[var(--brand)] px-6 text-[length:calc(14px*var(--fs))] font-semibold text-[var(--brand-dark)] shadow-[0_0_18px_color-mix(in_srgb,var(--brand)_35%,transparent)] transition hover:-translate-y-0.5 hover:brightness-110">
                 {t("ติดต่อเรา")}
               </Link>
             </div>
@@ -190,7 +190,10 @@ export function SiteFooter() {
         </div>
 
         {/* language */}
-        <div className="mt-6 border-t border-white/10 pt-6"><LanguageChips /></div>
+        <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-6">
+          <p className="text-[length:calc(13px*var(--fs))] font-semibold tracking-[0.14em] text-[var(--brand)]">{t("เลือกภาษา")}</p>
+          <LanguageChips />
+        </div>
 
         {/* bottom bar */}
         <div className="mt-6 flex flex-col gap-4 border-t border-white/10 pt-6 md:flex-row md:items-center md:justify-end">
