@@ -111,7 +111,33 @@ export function SiteFooter() {
         style={{ background: "radial-gradient(60% 100% at 50% 0%, color-mix(in srgb, var(--brand) 16%, transparent), transparent)" }} />
 
       <div className="relative mx-auto max-w-[1140px] px-6 pb-[110px] pt-12 md:px-8 md:pb-8 md:pt-14">
-        <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1.1fr] md:gap-8">
+        {/* payments */}
+        <div className="flex flex-col gap-3">
+          <p className="text-[length:calc(13px*var(--fs))] font-semibold tracking-[0.14em] text-[var(--brand)]">{t("วิธีชำระเงิน")}</p>
+          <ul className="flex flex-wrap gap-3">
+            {banks.map((b) => (
+              <li key={b.code} title={b.name}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={b.image} alt={b.name} loading="lazy" className="size-12 rounded-full bg-white object-contain p-1" />
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* sponsors */}
+        <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-6">
+            <p className="text-[length:calc(13px*var(--fs))] font-semibold tracking-[0.14em] text-[var(--brand)]">{t("สนับสนุนโดย")}</p>
+            <ul className="grid grid-cols-5 gap-2 sm:max-w-[560px] sm:grid-cols-10">
+              {SPONSORS.map((id) => (
+                <li key={id} className="aspect-square overflow-hidden rounded-[12px] border border-[var(--brand)]/60 p-1">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/sponsors/${id}.webp`} alt={id.toUpperCase()} loading="lazy" className="block size-full rounded-[8px] object-contain" />
+                </li>
+              ))}
+            </ul>
+        </div>
+
+        <div className="mt-6 grid gap-10 border-t border-white/10 pt-10 md:grid-cols-[1.5fr_1fr_1fr_1.1fr] md:gap-8">
           {/* brand */}
           <div className="max-w-[340px]">
             <BrandLogo variant="footer" />
@@ -161,32 +187,6 @@ export function SiteFooter() {
               {categories.map((c) => <li key={c.id}><FooterLink href={`/?cat=${c.id}`}>{t(c.short)}</FooterLink></li>)}
             </ul>
           </nav>
-        </div>
-
-        {/* payments */}
-        <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 md:flex-row md:items-center md:gap-6">
-          <p className="shrink-0 text-[length:calc(13px*var(--fs))] font-semibold tracking-[0.14em] text-[var(--brand)]">{t("วิธีชำระเงิน")}</p>
-          <ul className="flex flex-wrap gap-2">
-            {banks.map((b) => (
-              <li key={b.code} title={b.name}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={b.image} alt={b.name} loading="lazy" className="size-12 rounded-full bg-white object-contain p-1" />
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* sponsors */}
-        <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-6">
-            <p className="text-[length:calc(13px*var(--fs))] font-semibold tracking-[0.14em] text-[var(--brand)]">{t("สนับสนุนโดย")}</p>
-            <ul className="grid grid-cols-5 gap-2 sm:max-w-[560px] sm:grid-cols-10">
-              {SPONSORS.map((id) => (
-                <li key={id} className="aspect-square overflow-hidden rounded-[12px] border border-[var(--brand)]/60 p-1">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`/sponsors/${id}.webp`} alt={id.toUpperCase()} loading="lazy" className="block size-full rounded-[8px] object-contain" />
-                </li>
-              ))}
-            </ul>
         </div>
 
         {/* language */}
