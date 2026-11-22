@@ -137,6 +137,48 @@ export function SiteFooter() {
             </ul>
         </div>
 
+        {/* language */}
+        <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-6">
+          <p className="text-[length:calc(13px*var(--fs))] font-semibold tracking-[0.14em] text-[var(--brand)]">{t("เลือกภาษา")}</p>
+          <LanguageChips />
+        </div>
+
+        {/* highlights (left) + contact (right) */}
+        <div className="mt-6 flex flex-col gap-4 border-t border-white/10 pt-6 md:flex-row md:items-stretch md:justify-between">
+            {/* highlights: one joined strip */}
+            <div className="grid w-full grid-cols-3 md:max-w-[400px] divide-x divide-white/10 overflow-hidden rounded-[16px] border border-white/10 bg-white/[0.04]" aria-label={t("จุดเด่น")}>
+              {([["security", "ปลอดภัย"], ["fast", "รวดเร็ว"], ["support", "ดูแล 24/7"]] as const).map(([k, label]) => (
+                <div key={k} className="grid place-items-center gap-1.5 px-2 py-3.5 text-center text-[length:calc(12px*var(--fs))] font-medium text-white/85">
+                  <FooterIcon kind={k} className="size-6" />{t(label)}
+                </div>
+              ))}
+            </div>
+
+            {/* contact: raised cards with a ringed gold icon badge */}
+            <div className="flex w-full gap-2.5 md:max-w-[400px]">
+              {(() => {
+                const card = "group flex flex-1 flex-col items-center gap-2 rounded-[16px] border border-white/10 bg-white/[0.06] px-2 py-3 text-center text-[length:calc(12px*var(--fs))] font-semibold text-white transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:bg-white/10 active:translate-y-0";
+                const badge = "grid size-9 place-items-center rounded-full bg-[var(--brand)]/15 text-[var(--brand)] ring-1 ring-[var(--brand)]/70 transition group-hover:scale-110 group-hover:bg-[var(--brand)]/25";
+                return (
+                  <>
+                    <Link href="/contact/" className={card}>
+                      <span className={badge}><FooterIcon kind="support" className="size-5" /></span>{t("ติดต่อเรา")}
+                    </Link>
+                    {channels.map((c) => (
+                      <a key={c.id} href={c.link} target={/^https?:/i.test(c.link) ? "_blank" : undefined} rel="noopener noreferrer"
+                        aria-label={t("ติดต่อทาง {v}", { v: CHANNEL_NAME[c.type] ?? c.type })} className={card}>
+                        <span className={badge}>
+                          <svg viewBox="0 0 24 24" className="size-5" fill="currentColor" aria-hidden>{ICON[c.type] ?? <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />}</svg>
+                        </span>
+                        {CHANNEL_NAME[c.type] ?? c.type}
+                      </a>
+                    ))}
+                  </>
+                );
+              })()}
+            </div>
+        </div>
+
         <div className="mt-6 grid gap-10 border-t border-white/10 pt-10 md:grid-cols-[1.5fr_1fr_1fr_1.1fr] md:gap-8">
           {/* brand */}
           <div className="max-w-[340px]">
@@ -144,29 +186,6 @@ export function SiteFooter() {
             <p className="mt-4 text-[length:calc(14px*var(--fs))] leading-relaxed text-white/65">
               {t("รวมผู้ให้บริการเกมครบวงจร เลือกเล่นได้ทุกหมวด ทุกอุปกรณ์ ฝาก-ถอนสะดวกผ่านหลายช่องทาง")}
             </p>
-
-            <div className="mt-5 grid grid-cols-3 gap-2" aria-label={t("จุดเด่น")}>
-              {([["security", "ปลอดภัย"], ["fast", "รวดเร็ว"], ["support", "ดูแล 24/7"]] as const).map(([k, label]) => {
-                const cls = "grid place-items-center gap-1.5 rounded-[14px] border border-white/10 bg-white/[0.04] px-2 py-3 text-center text-[length:calc(12px*var(--fs))] font-medium text-white/85 backdrop-blur transition hover:border-[var(--brand)]/60";
-                const inner = <><FooterIcon kind={k} className="size-6" />{t(label)}</>;
-                return k === "support"
-                  ? <Link key={k} href="/contact/" aria-label={t("ติดต่อเรา")} className={cls}>{inner}</Link>
-                  : <div key={k} className={cls}>{inner}</div>;
-              })}
-            </div>
-
-            <div className="mt-5 flex flex-wrap items-center gap-2.5">
-              {channels.map((c) => (
-                <a key={c.id} href={c.link} target={/^https?:/i.test(c.link) ? "_blank" : undefined} rel="noopener noreferrer"
-                  aria-label={t("ติดต่อทาง {v}", { v: CHANNEL_NAME[c.type] ?? c.type })}
-                  className="grid size-12 place-items-center rounded-full border border-[var(--brand)] bg-[var(--brand)]/15 text-[var(--brand)] shadow-[0_0_18px_color-mix(in_srgb,var(--brand)_35%,transparent)] transition hover:-translate-y-0.5 hover:bg-[var(--brand)] hover:text-[var(--brand-dark)]">
-                  <svg viewBox="0 0 24 24" className="size-6" fill="currentColor" aria-hidden>{ICON[c.type] ?? <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />}</svg>
-                </a>
-              ))}
-              <Link href="/contact/" className="inline-flex h-12 items-center rounded-full bg-[var(--brand)] px-6 text-[length:calc(14px*var(--fs))] font-semibold text-[var(--brand-dark)] shadow-[0_0_18px_color-mix(in_srgb,var(--brand)_35%,transparent)] transition hover:-translate-y-0.5 hover:brightness-110">
-                {t("ติดต่อเรา")}
-              </Link>
-            </div>
           </div>
 
           {/* menu + services side by side on mobile */}
@@ -187,12 +206,6 @@ export function SiteFooter() {
               {categories.map((c) => <li key={c.id}><FooterLink href={`/?cat=${c.id}`}>{t(c.short)}</FooterLink></li>)}
             </ul>
           </nav>
-        </div>
-
-        {/* language */}
-        <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-6">
-          <p className="text-[length:calc(13px*var(--fs))] font-semibold tracking-[0.14em] text-[var(--brand)]">{t("เลือกภาษา")}</p>
-          <LanguageChips />
         </div>
 
         {/* bottom bar */}
