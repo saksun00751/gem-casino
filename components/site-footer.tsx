@@ -38,12 +38,36 @@ const SERVICES = [
   { href: "/history/", label: "ประวัติการเงิน" },
   { href: "/referral/", label: "แนะนำเพื่อน" },
 ];
-const PAYMENTS = [
-  { icon: "🏦", label: "ธนาคาร" },
-  { icon: "👛", label: "TrueWallet" },
-  { icon: "📱", label: "QR Payment" },
-  { icon: "🧾", label: "สลิปโอนเงิน" },
-];
+const SPONSORS = ["bng", "dg", "ds", "evp", "fch", "glx", "hak", "jili", "joker", "nge", "nlc", "pg", "pp", "rlx", "sa", "sexy", "tpg", "trb", "wm", "ygg"];
+
+type Bank = { code: number; name: string; shortcode: string; image: string };
+const BANKS_KEY = "footer-banks-v1";
+const BANKS_TTL = 24 * 60 * 60 * 1000; // bank logos almost never change: keep them a day
+
+function readBanks(): { list: Bank[]; fresh: boolean } | null {
+  try {
+    const raw = localStorage.getItem(BANKS_KEY);
+    if (!raw) return null;
+    const { at, list } = JSON.parse(raw) as { at: number; list: Bank[] };
+    if (!Array.isArray(list) || !list.length) return null;
+    return { list, fresh: Date.now() - at < BANKS_TTL };
+  } catch { return null; }
+}
+
+let banksPromise: Promise<Bank[]> | null = null;
+function loadBanks(): Promise<Bank[]> {
+  if (!banksPromise) {
+    banksPromise = fetch("/api/auth/banks/")
+      .then((r) => (r.ok ? r.json() : { banks: [] }))
+      .then((j) => (Array.isArray(j.banks) ? (j.banks as Bank[]) : []))
+      .then((list) => {
+        if (list.length) { try { localStorage.setItem(BANKS_KEY, JSON.stringify({ at: Date.now(), list })); } catch {} }
+        return list;
+      })
+      .catch(() => []);
+  }
+  return banksPromise;
+}
 
 function Heading({ children }: { children: React.ReactNode }) {
   return (
@@ -67,10 +91,15 @@ export function SiteFooter() {
   const t = useT();
   const categories = useCategories();
   const siteName = useSiteName();
+  const [banks, setBanks] = React.useState<Bank[]>([]);
   const [channels, setChannels] = React.useState<Channel[]>([]);
   React.useEffect(() => {
     let alive = true;
     loadContact().then((c) => alive && setChannels(c));
+    // Show the stored list at once; only hit the network when it is missing or older than a day.
+    const cached = readBanks();
+    if (cached) setBanks(cached.list);
+    if (!cached || !cached.fresh) loadBanks().then((b) => alive && b.length && setBanks(b));
     return () => { alive = false; };
   }, []);
 
@@ -136,27 +165,35 @@ export function SiteFooter() {
 
         {/* payments */}
         <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 md:flex-row md:items-center md:gap-6">
-          <p className="shrink-0 text-[length:calc(13px*var(--fs))] font-semibold tracking-[0.14em] text-[var(--brand)]">{t("ช่องทางฝาก-ถอน")}</p>
+          <p className="shrink-0 text-[length:calc(13px*var(--fs))] font-semibold tracking-[0.14em] text-[var(--brand)]">{t("วิธีชำระเงิน")}</p>
           <ul className="flex flex-wrap gap-2">
-            {PAYMENTS.map((p) => (
-              <li key={p.label} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-[length:calc(13px*var(--fs))] text-white/80">
-                <span aria-hidden>{p.icon}</span>{t(p.label)}
+            {banks.map((b) => (
+              <li key={b.code} title={b.name}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={b.image} alt={b.name} loading="lazy" className="size-12 rounded-full bg-white object-contain p-1" />
               </li>
             ))}
           </ul>
+        </div>
+
+        {/* sponsors */}
+        <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-6">
+            <p className="text-[length:calc(13px*var(--fs))] font-semibold tracking-[0.14em] text-[var(--brand)]">{t("สนับสนุนโดย")}</p>
+            <ul className="grid grid-cols-5 gap-2 sm:max-w-[560px] sm:grid-cols-10">
+              {SPONSORS.map((id) => (
+                <li key={id} className="aspect-square overflow-hidden rounded-[12px] border border-[var(--brand)]/60 p-1">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/sponsors/${id}.webp`} alt={id.toUpperCase()} loading="lazy" className="block size-full rounded-[8px] object-contain" />
+                </li>
+              ))}
+            </ul>
         </div>
 
         {/* language */}
         <div className="mt-6 border-t border-white/10 pt-6"><LanguageChips /></div>
 
         {/* bottom bar */}
-        <div className="mt-6 flex flex-col gap-4 border-t border-white/10 pt-6 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-start gap-3">
-            <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full border border-[var(--brand)]/70 text-[length:calc(12px*var(--fs))] font-bold text-[var(--brand)]">18+</span>
-            <p className="max-w-[440px] text-[length:calc(12px*var(--fs))] leading-relaxed text-white/55">
-              {t("เว็บไซต์นี้สำหรับผู้มีอายุ 18 ปีขึ้นไป โปรดเล่นอย่างมีความรับผิดชอบ")}
-            </p>
-          </div>
+        <div className="mt-6 flex flex-col gap-4 border-t border-white/10 pt-6 md:flex-row md:items-center md:justify-end">
           <div className="flex items-center justify-between gap-4 md:justify-end">
             <p className="text-[length:calc(12px*var(--fs))] text-white/55">© 2026 {siteName}. All Rights Reserved.</p>
             <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label={t("กลับขึ้นด้านบน")}
